@@ -27,3 +27,4 @@ module FsModule =
     let LogSoftMax (dimension:int64) (tensor:TorchTensor)=
         NN.Module.LogSoftMax dimension
             |> Forward tensor
+    
