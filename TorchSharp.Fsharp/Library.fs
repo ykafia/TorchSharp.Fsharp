@@ -2,8 +2,8 @@
 open TorchSharp
 open TorchSharp.Tensor
 open TorchSharp.NN
-module Tuple2 = 
-  let map f (a, b) = (f a, f b)
+open FsUtils
+
 module FsModule =
     
     let Forward  y (x:ProvidedModule) = x.Forward(y)
@@ -12,3 +12,18 @@ module FsModule =
         (kernelSize,stride) 
             |> Tuple2.map List.toArray 
             |> NN.Module.MaxPool2D
+            |> Forward tensor
+    
+    let RelU (inplace:bool) (tensor:TorchTensor) =
+        NN.Module.Relu inplace
+            |> Forward tensor
+
+    let AdaptiveAvgPool2D (outputSize:list<int64>) (tensor:TorchTensor) =
+        outputSize
+            |> List.toArray
+            |> NN.Module.AdaptiveAvgPool2D
+            |> Forward tensor
+
+    let LogSoftMax (dimension:int64) (tensor:TorchTensor)=
+        NN.Module.LogSoftMax dimension
+            |> Forward tensor
