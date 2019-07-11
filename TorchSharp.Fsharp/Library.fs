@@ -1,30 +1,51 @@
 ﻿namespace TorchSharp.FSharp
+
 open TorchSharp
 open TorchSharp.Tensor
-open TorchSharp.NN
 open FsUtils
 
 module FsModule =
-    
-    let Forward  y (x:ProvidedModule) = x.Forward(y)
-    
-    let MaxPool2D (kernelSize:list<int64>) (stride:list<int64>) (tensor:TorchTensor)= 
-        (kernelSize,stride) 
-            |> Tuple2.map List.toArray 
-            |> NN.Module.MaxPool2D
-            |> Forward tensor
-    
-    let RelU (inplace:bool) (tensor:TorchTensor) =
-        NN.Module.Relu inplace
-            |> Forward tensor
+    let Forward y (x : NN.ProvidedModule) = x.Forward(y)
 
-    let AdaptiveAvgPool2D (outputSize:list<int64>) (tensor:TorchTensor) =
+    let ZeroGrad (x:NN.Sequential)  = x.ZeroGrad()
+
+    let Linear (inputS : int64) (outputS : int64) (withBias : bool) =
+        NN.Module.Linear (inputS, outputS, withBias)
+
+    let Conv2D (inputChannel:int64)(outputChannel:int64)(kernelSize:int64)(stride:int64)(padding:int64)=
+        NN.Module.Conv2D (inputChannel, outputChannel, kernelSize, stride, padding)
+
+    let RelU(inplace : bool) = NN.Module.Relu inplace
+
+    let MaxPool2D (kernelSize : list<int64>) (stride : list<int64>) =
+        (kernelSize, stride)
+        |> Tuple2.map List.toArray
+        |> NN.Module.MaxPool2D
+
+
+    let Sequential (modules:array<NN.Module>) = 
+        NN.Module.Sequential(modules)
+
+    
+    let AdaptiveAvgPool2D(outputSize : list<int64>) =
         outputSize
-            |> List.toArray
-            |> NN.Module.AdaptiveAvgPool2D
-            |> Forward tensor
+        |> List.toArray
+        |> NN.Module.AdaptiveAvgPool2D
 
-    let LogSoftMax (dimension:int64) (tensor:TorchTensor)=
+    let LogSoftMax (dimension : int64) (tensor : TorchTensor) =
         NN.Module.LogSoftMax dimension
-            |> Forward tensor
+
+    let Dropout (isTraining:bool) (probability:double)=
+        NN.Module.Dropout (isTraining, probability)
+    
+    let DropoutDefault (isTraining:bool) =
+        Dropout isTraining 0.5
+    
+    let FeatureDropout = 
+        NN.Module.FeatureDropout
+
+    
+
+    
+
     
